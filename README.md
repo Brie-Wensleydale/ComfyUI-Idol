@@ -12,9 +12,15 @@ One picture of an object in; 32,768 – 1,048,576 Gaussians out, including the s
 Outputs a native ComfyUI `SPLAT`, so the core `RenderSplat` / `SplatToFile3D` / `SplatToMesh` nodes handle
 viewing, turntables and export — no separate viewer, no file round-trip.
 
-![Seven objects, one image each](docs/preview.png)
+![Eight Brie-themed props, one image each](docs/preview.png)
 
 *Every tile is a single input image turned into a splat and rendered by core `RenderSplat` — no manual cleanup.*
+
+Eight props, each generated with Krea 2, then orbited over 48 frames by `RenderSplat`:
+
+**[`docs/brie_items_turnarounds.mp4`](docs/brie_items_turnarounds.mp4)** — 8 × 48-frame turntables, 32 s, 768².
+
+Earlier run on the upstream Space's own sample images: [`docs/hf_examples.png`](docs/hf_examples.png).
 
 ## Install
 

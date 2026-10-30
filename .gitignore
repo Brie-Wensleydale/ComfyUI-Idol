@@ -28,3 +28,6 @@ runs/
 Thumbs.db
 .idea/
 .vscode/
+
+# local tooling scratch
+.hermes-tmp.*/
