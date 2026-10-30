@@ -1,0 +1,18 @@
+[project]
+name = "comfyui-idol"
+description = "Single image -> 3D Gaussian splat in ComfyUI, wrapping speridlabs/idol"
+version = "0.1.0"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+dependencies = ["tensordict", "plyfile"]
+
+[project.urls]
+Repository = "https://github.com/Brie-Wensleydale/ComfyUI-Idol"
+
+[tool.comfy]
+# PublisherId is issued by comfy.org when you register the pack for ComfyUI Manager;
+# fill it in (and bump version) only if you decide to publish to the Comfy Registry.
+PublisherId = ""
+DisplayName = "ComfyUI-Idol"
+Icon = ""
+requires-comfyui = ">=0.3.60"

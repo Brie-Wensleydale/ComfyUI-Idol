@@ -1,0 +1,30 @@
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# weights and model artefacts (never commit these) - root only, so idol/models/ ships
+/models/
+*.safetensors
+*.ckpt
+*.pth
+*.bin
+*.onnx
+*.ply
+*.splat
+
+
+# generated output
+output/
+runs/
+*.log
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

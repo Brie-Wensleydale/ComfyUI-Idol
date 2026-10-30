@@ -1,0 +1,21 @@
+ComfyUI-Idol
+============
+
+This pack vendors the `idol` python package (Apache License 2.0) from
+  https://github.com/speridlabs/idol-sdk
+  https://huggingface.co/speridlabs/idol
+unmodified, under the `idol/` subdirectory. Its LICENSE is reproduced at the root of this pack.
+
+Model weights are NOT included. At runtime the pack downloads:
+  * speridlabs/idol (Apache-2.0) - DiT, octree decoder, gaussian decoder, BiRefNet
+  * timm/vit_huge_plus_patch16_dinov3.lvd1689m - Meta DINOv3 ViT-H/16+, under the DINOv3 licence
+    (https://ai.meta.com/resources/models-and-libraries/dinov3-license)
+  * Comfy-Org/Flux-2-Dev (split_files/vae) - FLUX.2 VAE, under the FLUX Non-Commercial licence
+    (https://huggingface.co/black-forest-labs/FLUX.2-dev/blob/main/LICENSE.md)
+
+The two encoder licences are not Apache-2.0 and are stricter than the rest of this pack. Local and
+private use of this pack is fine; redistributing a bundle that includes those encoder weights is not.
+
+Modifications to the vendored code: none. The node module substitutes its own image-encoder class at
+import time (`idol.pipeline.ImageEncoder`) so that DINOv3 and the FLUX.2 VAE load from local weights
+instead of the two gated Hugging Face repositories the upstream code requests.

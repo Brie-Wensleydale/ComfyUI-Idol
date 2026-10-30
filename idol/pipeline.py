@@ -1,0 +1,109 @@
+"""IdolPipeline: one image in, 3D Gaussians out."""
+import json
+import os
+from dataclasses import dataclass
+from typing import Optional, Union
+
+import numpy as np
+import torch
+from PIL import Image
+from safetensors.torch import load_file
+from tensordict import TensorDict
+
+from .camera import decode_camera
+from .conditioning import ImageEncoder
+from .gaussian import Gaussian
+from .models import BiRefNet, GaussianFixedlenDecoder, LatentSeqMMFlowModel, OctreeProbabilityFixedlenDecoder
+from .preprocess import CROP_MARGIN, preprocess_image
+from .sampler import sample_flow
+
+DEFAULT_REPO = 'speridlabs/idol'
+WEIGHT_FILES = ['config.json', 'denoiser.safetensors', 'decoder.safetensors', 'decoder_gs.safetensors',
+                'birefnet.safetensors']
+
+
+@dataclass
+class IdolOutput:
+    gaussian: Gaussian               # the object; .save_ply(path) writes a standard 3DGS PLY
+    preprocessed_image: Image.Image  # the 1024 x 1024 image the model saw (background removed, cropped)
+    camera: dict                     # predicted input camera: yaw, pitch (radians), radius, fov (degrees)
+
+
+class IdolPipeline:
+    def __init__(self, weights_dir: str, device: Optional[str] = None, dinov3_dtype: str = 'bf16'):
+        self.device = torch.device(device or ('cuda' if torch.cuda.is_available() else 'cpu'))
+        with open(os.path.join(weights_dir, 'config.json')) as f:
+            self.config = json.load(f)
+
+        def load(model, name):
+            model.load_state_dict(load_file(os.path.join(weights_dir, f'{name}.safetensors')), strict=True)
+            return model.eval().requires_grad_(False).to(self.device)
+
+        self.denoiser = load(LatentSeqMMFlowModel(**self.config['denoiser']['args']), 'denoiser')
+        self.decoder = load(OctreeProbabilityFixedlenDecoder(**self.config['decoder']['args']), 'decoder')
+        self.decoder_gs = load(GaussianFixedlenDecoder(**self.config['decoder_gs']['args']), 'decoder_gs')
+        self.background_remover = load(BiRefNet(), 'birefnet')
+        if self.device.type == 'cuda':
+            self.background_remover.half()
+        encoders = self.config['image_encoders']
+        self.image_encoder = ImageEncoder(encoders['dinov3'], encoders['flux2_vae'], dinov3_dtype=dinov3_dtype,
+                                          device=self.device)
+
+    @classmethod
+    def from_pretrained(cls, repo_or_dir: str = DEFAULT_REPO, **kwargs) -> 'IdolPipeline':
+        """Load from a local folder or a Hugging Face repo (downloaded once into the HF cache)."""
+        if os.path.isdir(repo_or_dir):
+            return cls(repo_or_dir, **kwargs)
+        from huggingface_hub import snapshot_download
+        return cls(snapshot_download(repo_or_dir, allow_patterns=WEIGHT_FILES), **kwargs)
+
+    def preprocess(self, image: Union[str, Image.Image], mode: str = 'synthetic',
+                   crop_margin: Optional[float] = None) -> Image.Image:
+        """mode 'synthetic' (renders, generated images of one object: crop 1.2) or 'real' (photos: crop 1.7);
+        crop_margin overrides the mode's value."""
+        if isinstance(image, str):
+            image = Image.open(image)
+        margin = crop_margin if crop_margin is not None else CROP_MARGIN[mode]
+        return preprocess_image(image, background_remover=self.background_remover,
+                                image_size=self.config['image_size'], crop_margin=margin)
+
+    @torch.no_grad()
+    def __call__(
+        self,
+        image: Union[str, Image.Image],
+        mode: str = 'synthetic',
+        seed: int = 42,
+        steps: int = 50,
+        cfg_strength: float = 3.0,
+        rescale_t: float = 3.0,
+        num_gaussians: int = 262144,
+        crop_margin: Optional[float] = None,
+        verbose: bool = False,
+    ) -> IdolOutput:
+        """Generate the 3D Gaussians of the object in ``image``.
+
+        mode / crop_margin: see ``preprocess``.
+        num_gaussians: 32,768 to 1,048,576, rounded down to a multiple of 32."""
+        prepared = self.preprocess(image, mode=mode, crop_margin=crop_margin)
+        pixels = torch.from_numpy(np.array(prepared)).permute(2, 0, 1).float().div(255.0)[None].to(self.device)
+
+        torch.manual_seed(seed)
+        cond = self.image_encoder(pixels)
+        noise = TensorDict({
+            'latent': torch.randn(1, self.denoiser.q_token_length, self.denoiser.in_channels, device=self.device),
+            'camera': torch.randn(1, 1, self.denoiser.cam_channels, device=self.device),
+        }, batch_size=1, device=self.device)
+        sample = sample_flow(self.denoiser, noise, cond=cond, neg_cond=cond.apply(torch.zeros_like), steps=steps,
+                             rescale_t=rescale_t, cfg_strength=cfg_strength, verbose=verbose)
+        gaussian = self.decode(sample['latent'], num_gaussians)
+        return IdolOutput(gaussian=gaussian, preprocessed_image=prepared, camera=decode_camera(sample['camera'][0, 0]))
+
+    @torch.no_grad()
+    def decode(self, latent: torch.Tensor, num_gaussians: int = 262144) -> Gaussian:
+        """Latent [1, 8192, 16] -> Gaussians: the octree decoder places num_gaussians / 32 anchor points, the
+        Gaussian decoder turns each anchor into 32 Gaussians."""
+        per_anchor = self.decoder_gs.rep_config['num_gaussians']
+        anchors = OctreeProbabilityFixedlenDecoder.sample(self.decoder, latent,
+                                                          num_points=max(1, int(num_gaussians) // per_anchor),
+                                                          level=self.config['max_voxel_level'])
+        return self.decoder_gs.to_representation(anchors, self.decoder_gs(anchors, latent))[0]

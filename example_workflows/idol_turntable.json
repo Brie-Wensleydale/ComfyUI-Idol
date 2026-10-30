@@ -1,0 +1,624 @@
+{
+  "id": "9cdd6d07-0f23-4b1b-bb0d-bc803b872821",
+  "revision": 0,
+  "last_node_id": 6,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        60,
+        140
+      ],
+      "size": [
+        282.798828125,
+        102
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "choose file to upload",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "localized_name": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.42.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "example.png",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 2,
+      "type": "IdolLoader",
+      "pos": [
+        60,
+        520
+      ],
+      "size": [
+        281.9140625,
+        106
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "dinov3_dtype",
+          "name": "dinov3_dtype",
+          "type": "COMBO",
+          "widget": {
+            "name": "dinov3_dtype"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "download_if_missing",
+          "name": "download_if_missing",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "download_if_missing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "weights_dir",
+          "name": "weights_dir",
+          "type": "STRING",
+          "widget": {
+            "name": "weights_dir"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "idol",
+          "name": "idol",
+          "type": "IDOL_PIPELINE",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IdolLoader"
+      },
+      "widgets_values": [
+        "bf16",
+        true,
+        ""
+      ],
+      "widgets_values_named": {
+        "dinov3_dtype": "bf16",
+        "download_if_missing": true,
+        "weights_dir": ""
+      }
+    },
+    {
+      "id": 3,
+      "type": "IdolGenerate",
+      "pos": [
+        460,
+        140
+      ],
+      "size": [
+        270,
+        314
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "idol",
+          "name": "idol",
+          "type": "IDOL_PIPELINE",
+          "link": 2
+        },
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg_strength",
+          "name": "cfg_strength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg_strength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "rescale_t",
+          "name": "rescale_t",
+          "type": "FLOAT",
+          "widget": {
+            "name": "rescale_t"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "num_gaussians",
+          "name": "num_gaussians",
+          "type": "COMBO",
+          "widget": {
+            "name": "num_gaussians"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "crop_margin",
+          "name": "crop_margin",
+          "type": "FLOAT",
+          "widget": {
+            "name": "crop_margin"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "save_ply",
+          "name": "save_ply",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "save_ply"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "unload_after_run",
+          "name": "unload_after_run",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "unload_after_run"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "splat",
+          "name": "splat",
+          "type": "SPLAT",
+          "links": [
+            3
+          ]
+        },
+        {
+          "localized_name": "preprocessed",
+          "name": "preprocessed",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "localized_name": "ply_path",
+          "name": "ply_path",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IdolGenerate"
+      },
+      "widgets_values": [
+        "synthetic",
+        50,
+        3,
+        3,
+        42,
+        "randomize",
+        "262144",
+        0,
+        true,
+        false
+      ],
+      "widgets_values_named": {
+        "mode": "synthetic",
+        "steps": 50,
+        "cfg_strength": 3,
+        "rescale_t": 3,
+        "seed": 42,
+        "control_after_generate": "randomize",
+        "num_gaussians": "262144",
+        "crop_margin": 0,
+        "save_ply": true,
+        "unload_after_run": false
+      }
+    },
+    {
+      "id": 4,
+      "type": "RenderSplat",
+      "pos": [
+        900,
+        140
+      ],
+      "size": [
+        270,
+        290
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "splat",
+          "name": "splat",
+          "type": "SPLAT",
+          "link": 3
+        },
+        {
+          "localized_name": "bg_image",
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "camera_info",
+          "name": "camera_info",
+          "shape": 7,
+          "type": "LOAD3D_CAMERA",
+          "link": null
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "frames",
+          "name": "frames",
+          "type": "INT",
+          "widget": {
+            "name": "frames"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "splat_scale",
+          "name": "splat_scale",
+          "type": "FLOAT",
+          "widget": {
+            "name": "splat_scale"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sharpen",
+          "name": "sharpen",
+          "type": "FLOAT",
+          "widget": {
+            "name": "sharpen"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "headlight_shading",
+          "name": "headlight_shading",
+          "type": "FLOAT",
+          "widget": {
+            "name": "headlight_shading"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "opacity_threshold",
+          "name": "opacity_threshold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "opacity_threshold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "render_style",
+          "name": "render_style",
+          "type": "COMBO",
+          "widget": {
+            "name": "render_style"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "background",
+          "name": "background",
+          "type": "COLOR",
+          "widget": {
+            "name": "background"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.42.0",
+        "Node name for S&R": "RenderSplat"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        24,
+        1,
+        1,
+        1,
+        0,
+        "color",
+        "#ffffff"
+      ],
+      "widgets_values_named": {
+        "width": 1024,
+        "height": 1024,
+        "frames": 24,
+        "splat_scale": 1,
+        "sharpen": 1,
+        "headlight_shading": 1,
+        "opacity_threshold": 0,
+        "render_style": "color",
+        "background": "#ffffff"
+      }
+    },
+    {
+      "id": 5,
+      "type": "SaveImage",
+      "pos": [
+        1300,
+        140
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.42.0",
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "idol_turntable"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "idol_turntable"
+      }
+    },
+    {
+      "id": 6,
+      "type": "SaveImage",
+      "pos": [
+        900,
+        520
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.42.0",
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "idol_preprocessed"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "idol_preprocessed"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "IDOL_PIPELINE"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "SPLAT"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      3,
+      1,
+      6,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.55,
+      "offset": [
+        0,
+        0
+      ]
+    }
+  },
+  "version": 0.4
+}
