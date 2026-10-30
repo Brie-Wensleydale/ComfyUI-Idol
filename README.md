@@ -16,6 +16,10 @@ viewing, turntables and export — no separate viewer, no file round-trip.
 
 *Every tile is a single input image turned into a splat and rendered by core `RenderSplat` — no manual cleanup.*
 
+Below are the eight source images those splats were built from:
+
+![The eight input images](docs/input_images.png)
+
 Eight props, each generated with Krea 2, then orbited over 48 frames by `RenderSplat`:
 
 **[`docs/brie_items_turnarounds.mp4`](docs/brie_items_turnarounds.mp4)** — 8 × 48-frame turntables, 32 s, 768².
