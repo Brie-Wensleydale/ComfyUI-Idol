@@ -20,12 +20,6 @@ Below are the eight source images those splats were built from:
 
 ![The eight input images](docs/input_images.png)
 
-Eight props, each generated with Krea 2, then orbited over 48 frames by `RenderSplat`:
-
-**[`docs/brie_items_turnarounds.mp4`](docs/brie_items_turnarounds.mp4)** — 8 × 48-frame turntables, 32 s, 768².
-
-Earlier run on the upstream Space's own sample images: [`docs/hf_examples.png`](docs/hf_examples.png).
-
 ## Install
 
 **Manual**
